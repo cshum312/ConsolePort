@@ -160,10 +160,14 @@ do	local Scrub, IsProtected, IsForbidden, GetChildren =
 			-- Secret forbidden state scrubs to nil; only an explicit
 			-- false means the node is accessible.
 			if ( Scrub(IsForbidden(node)) == false ) then
-				if Scrub(IsProtected(node)) then
+				-- Use pcall to catch errors
+				local isProtectedStatus, isProtectedOutput = pcall(IsProtected, node)
+				if isProtectedStatus and Scrub(isProtectedOutput) then
 					ClassifyNode(StageNode, node)
 				end
-				PushChildren(Scrub(GetChildren(node)))
+				local pushChildrenStatus, pushChildrenOutput = pcall(function()
+					PushChildren(Scrub(GetChildren(node)))
+				end)
 			end
 			if ( debugprofilestop() > expires ) then
 				return -- over budget; nodes are never processed partially

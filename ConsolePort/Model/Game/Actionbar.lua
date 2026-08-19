@@ -115,7 +115,8 @@ do
 	end
 
 	local function ValidateActionID(this)
-		if not Scrub(Frame.IsProtected(this)) then return end
+		local frameProtectedStatus, frameProtectedOutput = pcall(Frame.IsProtected(this))
+		if not frameProtectedStatus or not Scrub(frameProtectedOutput) then return end
 		if not VALID_BUTTON_TYPE[Scrub(Frame.GetObjectType(this))] then return end
 		return Scrub(Frame.GetAttribute(this, 'action'))
 	end
